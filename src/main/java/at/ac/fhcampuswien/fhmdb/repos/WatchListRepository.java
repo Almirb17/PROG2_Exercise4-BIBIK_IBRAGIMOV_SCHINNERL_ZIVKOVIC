@@ -11,9 +11,17 @@ import java.util.List;
 
 public class WatchListRepository {
     static Dao<WatchlistMovieEntity, String> dao;
+    private static WatchListRepository instance;
 
-    public WatchListRepository() throws DatabaseException {
-        this.dao = DatabaseManager.getInstance().getWatchListDao();
+    private WatchListRepository() throws DatabaseException {
+        dao = DatabaseManager.getInstance().getWatchListDao();
+    }
+
+    public static WatchListRepository getInstance() throws DatabaseException {
+        if (instance == null) {
+            instance = new WatchListRepository();
+        }
+        return instance;
     }
 
     public List<WatchlistMovieEntity> getWatchlist() throws DatabaseException {

@@ -37,13 +37,13 @@ public class WatchListController implements Initializable  {
     {
         //init repos
         try {
-            g_wtchlst_repo = new WatchListRepository();
+            g_wtchlst_repo = WatchListRepository.getInstance();
         }
         catch(DatabaseException e) {
             AlertHandler.throwAlert("Fehler beim Initialisieren der Watchlist Datenbank aufgetreten:\n" + e.getMessage());
         }
         try {
-            g_movie_repo = new MovieRepository();
+            g_movie_repo = MovieRepository.getInstance();
         }
         catch(DatabaseException e) {
             AlertHandler.throwAlert("Fehler beim Initialisieren der Movie Datenbank aufgetreten:\n" + e.getMessage());
