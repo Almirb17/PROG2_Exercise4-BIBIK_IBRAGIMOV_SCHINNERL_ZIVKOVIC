@@ -133,14 +133,14 @@ public class MovieController implements Initializable {
 
         //init repos
         try {
-            g_wtchlst_repo = new WatchListRepository();
+            g_wtchlst_repo = WatchListRepository.getInstance();
         }
         catch(DatabaseException e) {
             AlertHandler.throwAlert("Watchlist Datenbank konnte nicht initialisiert werden: \n" + e.getMessage());
 
         }
         try {
-            g_movie_repo = new MovieRepository();
+            g_movie_repo = MovieRepository.getInstance();
         }
         catch(DatabaseException e) {
             AlertHandler.throwAlert("Movielist Datenbank konnte nicht initialisiert werden: \n" + e.getMessage());

@@ -14,9 +14,19 @@ import java.util.List;
 
 public class MovieRepository {
     static Dao<MovieEntity, String> dao;
+    private static MovieRepository instance;
 
-    public MovieRepository() throws DatabaseException {
-        this.dao = DatabaseManager.getInstance().getMovieDao();
+
+    private MovieRepository() throws DatabaseException {
+        dao = DatabaseManager.getInstance().getMovieDao();
+
+    }
+
+    public static MovieRepository getInstance() throws DatabaseException {
+        if (instance == null) {
+            instance = new MovieRepository();
+        }
+        return instance;
     }
 
     public List<Movie> getAllMovies() throws DatabaseException {
