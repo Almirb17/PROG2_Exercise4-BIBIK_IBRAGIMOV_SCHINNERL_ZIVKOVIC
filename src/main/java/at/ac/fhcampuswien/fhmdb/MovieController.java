@@ -9,6 +9,7 @@ import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
 import at.ac.fhcampuswien.fhmdb.repos.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.repos.WatchListRepository;
+import at.ac.fhcampuswien.fhmdb.state_pattern.SortContext;
 import at.ac.fhcampuswien.fhmdb.ui.AlertHandler;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import com.jfoenix.controls.JFXButton;
@@ -50,6 +51,7 @@ public class MovieController implements Initializable {
     protected SortedState sortedState = SortedState.NONE;
     private WatchListRepository g_wtchlst_repo;
     private MovieRepository g_movie_repo;
+    private SortContext sortContext = new SortContext();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -105,12 +107,12 @@ public class MovieController implements Initializable {
         fillObservableMovieList(searchQuery, genre, releaseYear, ratingFrom);
 
         //sort observable list
-        sortMovies(sortedState);
+        sortContext.sort(observableMovies);
     }
 
     @FXML
     private void sortBtnClicked(ActionEvent actionEvent) {
-        sortMovies();
+        sortContext.sort(observableMovies);
     }
 
     private String validateComboboxValue(Object value) {
@@ -177,25 +179,9 @@ public class MovieController implements Initializable {
         }
         //in observable list
         setMovieObservableList(result);
+        sortContext.applyCurrent(observableMovies);
     }
 
-    private void sortMovies(){
-        if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
-            sortMovies(SortedState.ASCENDING);
-        } else if (sortedState == SortedState.ASCENDING) {
-            sortMovies(SortedState.DESCENDING);
-        }
-    }
-
-    public void sortMovies(SortedState sortDirection) {
-        if (sortDirection == SortedState.ASCENDING) {
-            observableMovies.sort(Comparator.comparing(Movie::getTitle));
-            sortedState = SortedState.ASCENDING;
-        } else {
-            observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
-            sortedState = SortedState.DESCENDING;
-        }
-    }
 
     private final ClickEventHandler onAddToWatchlistClicked = (clickedItem) ->
     {
