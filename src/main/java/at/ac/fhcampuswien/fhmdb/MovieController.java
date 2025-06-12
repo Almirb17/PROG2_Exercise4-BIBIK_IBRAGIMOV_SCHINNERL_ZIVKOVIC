@@ -7,6 +7,7 @@ import at.ac.fhcampuswien.fhmdb.exceptions.MovieApiException;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
+import at.ac.fhcampuswien.fhmdb.observer_pattern.Observer;
 import at.ac.fhcampuswien.fhmdb.repos.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.repos.WatchListRepository;
 import at.ac.fhcampuswien.fhmdb.state_pattern.SortContext;
@@ -25,7 +26,7 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.*;
 
-public class MovieController implements Initializable {
+public class MovieController implements Initializable, Observer {
     @FXML
     public JFXButton searchBtn;
 
@@ -56,6 +57,7 @@ public class MovieController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         fillObservableMovieList(null, null, null, null);
+        g_wtchlst_repo.registerObserver(this);
         initializeLayout();
     }
 
@@ -136,14 +138,14 @@ public class MovieController implements Initializable {
             g_wtchlst_repo = WatchListRepository.getInstance();
         }
         catch(DatabaseException e) {
-            AlertHandler.throwAlert("Watchlist Datenbank konnte nicht initialisiert werden: \n" + e.getMessage());
+            AlertHandler.throwErrorAlert("Watchlist Datenbank konnte nicht initialisiert werden: \n" + e.getMessage());
 
         }
         try {
             g_movie_repo = MovieRepository.getInstance();
         }
         catch(DatabaseException e) {
-            AlertHandler.throwAlert("Movielist Datenbank konnte nicht initialisiert werden: \n" + e.getMessage());
+            AlertHandler.throwErrorAlert("Movielist Datenbank konnte nicht initialisiert werden: \n" + e.getMessage());
 
         }
 
@@ -153,13 +155,13 @@ public class MovieController implements Initializable {
             api_success = true;
         }
         catch (MovieApiException apiException) {
-            AlertHandler.throwAlert("Movies konnten nicht aus der API geladen werden: \n" +apiException.getMessage());
+            AlertHandler.throwErrorAlert("Movies konnten nicht aus der API geladen werden: \n" +apiException.getMessage());
 
             try {
                 result = g_movie_repo.getAllMovies();
             }catch (DatabaseException databaseException)
             {
-                AlertHandler.throwAlert("Movies konnten nicht aus der Datenbank geladen werden: \n" +databaseException.getMessage());
+                AlertHandler.throwErrorAlert("Movies konnten nicht aus der Datenbank geladen werden: \n" +databaseException.getMessage());
             }
         }
 
@@ -174,11 +176,13 @@ public class MovieController implements Initializable {
             }
             catch (DatabaseException databaseException)
             {
-                AlertHandler.throwAlert("Movies können nicht aus der API in die Datenbank hinzugefügt werden: \n" + databaseException.getMessage());
+                AlertHandler.throwErrorAlert("Movies können nicht aus der API in die Datenbank hinzugefügt werden: \n" + databaseException.getMessage());
             }
         }
         //in observable list
         setMovieObservableList(result);
+
+        //apply the sortState
         sortContext.applyCurrent(observableMovies);
     }
 
@@ -190,7 +194,12 @@ public class MovieController implements Initializable {
             g_wtchlst_repo.addToWatchlist(new WatchlistMovieEntity(movie.getId()));
         }
         catch (DatabaseException e) {
-            AlertHandler.throwAlert("Movie konnte nicht hinzugefügt werden:\n " + e.getMessage());
+            AlertHandler.throwErrorAlert("Movie konnte nicht hinzugefügt werden:\n " + e.getMessage());
         }
     };
+
+    @Override
+    public void update(String message) {
+        AlertHandler.throwInfoAlert(message);
+    }
 }

@@ -3,22 +3,21 @@ package at.ac.fhcampuswien.fhmdb;
 import at.ac.fhcampuswien.fhmdb.database.WatchlistMovieEntity;
 import at.ac.fhcampuswien.fhmdb.exceptions.DatabaseException;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import at.ac.fhcampuswien.fhmdb.observer_pattern.Observer;
 import at.ac.fhcampuswien.fhmdb.repos.MovieRepository;
 import at.ac.fhcampuswien.fhmdb.repos.WatchListRepository;
 import at.ac.fhcampuswien.fhmdb.ui.AlertHandler;
-import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import at.ac.fhcampuswien.fhmdb.ui.WatchlistCell;
 import com.jfoenix.controls.JFXListView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class WatchListController implements Initializable  {
+public class WatchListController implements Initializable, Observer {
     @FXML
     public JFXListView watchListView;
 
@@ -40,13 +39,13 @@ public class WatchListController implements Initializable  {
             g_wtchlst_repo = WatchListRepository.getInstance();
         }
         catch(DatabaseException e) {
-            AlertHandler.throwAlert("Fehler beim Initialisieren der Watchlist Datenbank aufgetreten:\n" + e.getMessage());
+            AlertHandler.throwErrorAlert("Fehler beim Initialisieren der Watchlist Datenbank aufgetreten:\n" + e.getMessage());
         }
         try {
             g_movie_repo = MovieRepository.getInstance();
         }
         catch(DatabaseException e) {
-            AlertHandler.throwAlert("Fehler beim Initialisieren der Movie Datenbank aufgetreten:\n" + e.getMessage());
+            AlertHandler.throwErrorAlert("Fehler beim Initialisieren der Movie Datenbank aufgetreten:\n" + e.getMessage());
         }
 
         //laden der watchlist daten
@@ -54,7 +53,7 @@ public class WatchListController implements Initializable  {
             observableWatchlistElements.addAll(g_movie_repo.getWatchlistBasedMovies(g_wtchlst_repo.getWatchlist()));
         }
         catch(DatabaseException e) {
-            AlertHandler.throwAlert("Fehler beim Laden der Filme aus der Watchlist:\n" + e.getMessage());
+            AlertHandler.throwErrorAlert("Fehler beim Laden der Filme aus der Watchlist:\n" + e.getMessage());
         }
     }
 
@@ -71,10 +70,13 @@ public class WatchListController implements Initializable  {
             observableWatchlistElements.remove(movie);
         }
         catch (DatabaseException e) {
-            AlertHandler.throwAlert("Fehler beim Entfernen des Films aus der Watchlist:\n" + e.getMessage());
+            AlertHandler.throwErrorAlert("Fehler beim Entfernen des Films aus der Watchlist:\n" + e.getMessage());
         }
 
     };
-
+    @Override
+    public void update(String message) {
+        AlertHandler.throwErrorAlert(message);
+    }
 
 }
