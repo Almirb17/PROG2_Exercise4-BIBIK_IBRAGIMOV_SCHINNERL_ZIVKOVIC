@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.factory_pattern.FXML_Factory;
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.transitions.hamburger.HamburgerBasicCloseTransition;
@@ -28,9 +29,11 @@ public class HomeController {
     private boolean isNavCollapsed = true;
 
     private HamburgerBasicCloseTransition transition;
+    private FXML_Factory myFactory;
 
     public void initialize(){
         initHamburger();
+        myFactory = new FXML_Factory();
         setContent("MovieList.fxml");
     }
 
@@ -67,6 +70,10 @@ public class HomeController {
     public void setContent(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/at/ac/fhcampuswien/fhmdb/" + fxmlPath));
+
+            //loader should use my controllerFactory
+            loader.setControllerFactory(myFactory);
+
             Parent content = loader.load();
             mainPane.setCenter(content);
         } catch (IOException e) {

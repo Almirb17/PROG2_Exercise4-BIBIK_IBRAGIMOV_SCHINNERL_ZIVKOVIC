@@ -7,14 +7,14 @@ import at.ac.fhcampuswien.fhmdb.observer_pattern.Observer;
 import at.ac.fhcampuswien.fhmdb.observer_pattern.Subject;
 import com.j256.ormlite.dao.Dao;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WatchListRepository implements Subject {
 
-    private List<Observer> observers = new ArrayList<>();
+    private final List<Observer> observers = new ArrayList<>();
+    static int counter = 0;
 
     static Dao<WatchlistMovieEntity, String> dao;
     private static WatchListRepository instance;
@@ -50,15 +50,6 @@ public class WatchListRepository implements Subject {
         }
     }
 
-    public void clearWatchlist() throws DatabaseException {
-        try {
-            dao.deleteBuilder().delete();
-        }
-        catch (SQLException e) {
-            throw new DatabaseException("Fehler beim Löschen der gesamten Watchlist", e);
-        }
-    }
-
     public void addToWatchlist(WatchlistMovieEntity wme) throws DatabaseException {
         try {
             // Prüfen, ob der Film bereits existiert
@@ -68,11 +59,13 @@ public class WatchListRepository implements Subject {
                 notifyObservers("Film ist bereits in der Watchlist.");
             } else {
                 dao.create(wme);
+                counter++;
+                System.out.println("Counter: " + counter);
                 notifyObservers("Film erfolgreich zur Watchlist hinzugefügt.");
             }
 
         } catch (SQLException e) {
-            throw new DatabaseException("Fehler beim Hinzufügen zur Watchlist: " + wme.toString(), e);
+            throw new DatabaseException("Fehler beim Hinzufügen zur Watchlist: " + wme, e);
         }
     }
 

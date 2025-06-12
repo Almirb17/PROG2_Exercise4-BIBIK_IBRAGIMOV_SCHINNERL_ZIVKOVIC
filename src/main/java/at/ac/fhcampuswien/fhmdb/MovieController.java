@@ -59,6 +59,7 @@ public class MovieController implements Initializable, Observer {
         fillObservableMovieList(null, null, null, null);
         g_wtchlst_repo.registerObserver(this);
         initializeLayout();
+        sortContext.reset();
     }
 
     public void initializeLayout() {
