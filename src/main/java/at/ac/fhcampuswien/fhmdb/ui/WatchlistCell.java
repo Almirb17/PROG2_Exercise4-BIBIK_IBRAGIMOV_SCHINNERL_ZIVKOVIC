@@ -16,9 +16,7 @@ public class WatchlistCell extends ListCell<Movie> {
     private final Label detail = new Label();
     private final Label genre = new Label();
     private final JFXButton detailBtn = new JFXButton("Show Details");
-    private final JFXButton removeBtn = new JFXButton("Remove");
     private final VBox layout = new VBox(title, detail, genre);
-    private final HBox buttonBox = new HBox(detailBtn, removeBtn);
     private boolean collapsedDetails = true;
 
     public WatchlistCell(ClickEventHandler onRemoveClicked) {
@@ -26,6 +24,7 @@ public class WatchlistCell extends ListCell<Movie> {
 
         // Styling
         detailBtn.setStyle("-fx-background-color: #f5c518;");
+        JFXButton removeBtn = new JFXButton("Remove");
         removeBtn.setStyle("-fx-background-color: #f5c518;");
         title.getStyleClass().add("text-yellow");
         detail.getStyleClass().add("text-white");
@@ -37,6 +36,7 @@ public class WatchlistCell extends ListCell<Movie> {
         layout.setSpacing(10);
         layout.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
+        HBox buttonBox = new HBox(detailBtn, removeBtn);
         buttonBox.setSpacing(10);
         buttonBox.setPadding(new Insets(5, 0, 0, 0));
         layout.getChildren().add(buttonBox);
@@ -85,6 +85,8 @@ public class WatchlistCell extends ListCell<Movie> {
 
     @Override
     protected void updateItem(Movie movie, boolean empty) {
+        if(this.getScene() == null){return;}
+
         super.updateItem(movie, empty);
 
         if (empty || movie == null) {
@@ -105,7 +107,7 @@ public class WatchlistCell extends ListCell<Movie> {
                     .collect(Collectors.joining(", "));
             genre.setText(genres);
 
-            detail.setMaxWidth(this.getScene().getWidth() - 30);
+                detail.setMaxWidth(this.getScene().getWidth() - 30);
             setGraphic(layout);
         }
     }

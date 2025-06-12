@@ -92,6 +92,7 @@ public class MovieCell extends ListCell<Movie> {
     }
     @Override
     protected void updateItem(Movie movie, boolean empty) {
+        if(this.getScene() == null){return;}
         super.updateItem(movie, empty);
 
         if (empty || movie == null) {

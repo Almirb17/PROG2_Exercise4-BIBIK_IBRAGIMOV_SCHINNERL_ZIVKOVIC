@@ -50,6 +50,7 @@ public class WatchListController implements Initializable, Observer {
 
         //laden der watchlist daten
         try {
+            observableWatchlistElements.clear();
             observableWatchlistElements.addAll(g_movie_repo.getWatchlistBasedMovies(g_wtchlst_repo.getWatchlist()));
         }
         catch(DatabaseException e) {
